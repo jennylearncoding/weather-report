@@ -1,8 +1,5 @@
 "use strict";
 
-// const LOCATIONIQ_KEY = process.env.LOCATION_API_KEY;
-// const OPENWEATHER_KEY = process.env.OPENWEATHER_API_KEY;
-
 
 // STATE TRACKING OBJECT
 const state = {
@@ -48,38 +45,34 @@ const updateCity = () => {
   cityName.textContent = cityInput.value; 
 };
 
-// // getting lon and lat
-// const getLonLat = async (city) => {
-//     try {
-//       const result = await axios.get('https://us1.locationiq.com/v1/search', {
-//         key: LOCATIONIQ_KEY,
-//         q: city,
-//         format: 'json'
-//       });
-//       const {lat, lon} = result.data[0];
-//       return {lat, lon};
-//     } catch(error) {
-//         console.log('error in find location', error);
-//         return {};
-//     } 
-// };
+// GET LON AND LAT FROM LOCATION ENDPOINT
+const getLonLat = async (city) => {
+    try {
+      const result = await axios.get('http://localhost:5000/location', {
+        params: {
+          q: city
+        }
+      });
+      const {lat, lon} = result.data[0];
+      return {lat, lon};
+    } catch(error) {
+        console.log('Cannot get coordinates', error);
+        return {};
+    } 
+};
 
-// // getting temperature using lat and lon
-// const getOpenWeatherTemp = async (coordinates) => {
-//     try {
-//       const {lat, lon} = coordinates;  
-//       const result = await axios.get('https://api.openweathermap.org/data/2.5/onecall', {
-//         appid: OPENWEATHER_KEY,
-//         units: 'imperial',
-//         lat, lon: coordinates
-//       });
-//       const temp = result.data.current.temp;
-//       return temp;
-//     } catch(error) {
-//         console.log('couldn\'t fetch the temperature', error);
-//         return null;
-//     } 
-// };
+// GET CURRENT WEATHER FROM WEATHER ENDPOINT USING LAT AND LON
+const getOpenWeatherTemp = async ({lat, lon}) => {
+    try {
+      const result = await axios.get('http://localhost:5000/weather', { 
+        params: {lat, lon}
+      });
+      return result.data.current.temp;
+    } catch(error) {
+        console.log('Cannot get current temperature', error);
+        return null;
+    } 
+};
 
 
 const registerEventHandlers = () => {
