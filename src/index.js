@@ -85,15 +85,15 @@ const registerEventHandlers = () => {
   // city input
   const cityInput = document.getElementById('cityNameInput');
   cityInput.addEventListener('input', updateCity);
-    // update the weather
-  // const getTempButton = document.getElementById('currentTempButton');
-  // getTempButton.addEventListener('click', async () => {
-  //   const city = document.getElementById('cityNameInput').value;
-  //   const coordinates = await getLonLat(city);
-  //   const temp = await getOpenWeatherTemp(coordinates);
-  //   state.temperature = temp;
-  //   temperature.textContent = state.temperature;
-  // })
+  // update the weather
+  const getTempButton = document.getElementById('currentTempButton');
+  getTempButton.addEventListener('click', async () => {
+    const city = document.getElementById('cityNameInput').value;
+    const coordinates = await getLonLat(city);
+    const temp = await getOpenWeatherTemp(coordinates);
+    state.temperature = temp;
+    temperature.textContent = state.temperature;
+  })
 };
 
 document.addEventListener('DOMContentLoaded', registerEventHandlers);
