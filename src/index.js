@@ -11,7 +11,7 @@ const state = {
 const temperature = document.getElementById('tempValue');
 const landscape = document.getElementById('landscape');
 
-// UPDATE TEMPERATURE FUCNTION + LANDSCAPE + COLOR
+// UPDATE TEMPERATURE FUNCTION + LANDSCAPE + COLOR
 const updateTemperature = (direction) => {
   if (direction === 'increase') {
     state.temperature += 1;
@@ -19,7 +19,11 @@ const updateTemperature = (direction) => {
     state.temperature -= 1;
   }
   temperature.textContent = state.temperature;
+  updateTempStyles();
+};
 
+// UPDATE TEMPERATURE/LANDSCAPE FUNCTION
+const updateTempStyles = () => {
   if (state.temperature >= 80) {
     temperature.style.color = 'red';
     landscape.textContent = '🌵__🐍_🦂_🌵🌵__🐍_🏜_🦂';
@@ -32,7 +36,7 @@ const updateTemperature = (direction) => {
   } else if (state.temperature >= 50) {
     temperature.style.color = 'green';
     landscape.textContent = '🌲🌲⛄️🌲⛄️🍂🌲🍁🌲🌲⛄️🍂🌲';
-  } else if (state.color <= 49) {
+  } else {
     temperature.style.color = 'teal';
     landscape.textContent = '🌲🌲⛄️🌲⛄️🍂🌲🍁🌲🌲⛄️🍂🌲';
   }
@@ -54,6 +58,7 @@ const getLonLat = async (city) => {
         }
       });
       const {lat, lon} = result.data[0];
+      console.log('{lat, lon}')
       return {lat, lon};
     } catch(error) {
         console.log('Cannot get coordinates', error);
@@ -91,8 +96,11 @@ const registerEventHandlers = () => {
     const city = document.getElementById('cityNameInput').value;
     const coordinates = await getLonLat(city);
     const temp = await getOpenWeatherTemp(coordinates);
-    state.temperature = temp;
+    if (temp !== null) {
+          state.temperature = temp;
     temperature.textContent = state.temperature;
+    updateTempStyles();
+    }
   })
 };
 
