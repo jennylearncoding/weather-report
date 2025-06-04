@@ -51,15 +51,16 @@ const updateCity = () => {
 
 // GET LON AND LAT FROM LOCATION ENDPOINT
 const getLonLat = async (city) => {
+  console.log('stepping into getLonLat function')
     try {
       const result = await axios.get('http://localhost:5000/location', {
         params: {
           q: city
         }
       });
-      const {lat, lon} = result.data[0];
-      console.log('{lat, lon}')
-      return {lat, lon};
+      const { lat, lon } = result.data[0];
+      console.log('{ lat, lon }')
+      return { lat, lon };
     } catch(error) {
         console.log('Cannot get coordinates', error);
         return {};
@@ -67,12 +68,13 @@ const getLonLat = async (city) => {
 };
 
 // GET CURRENT WEATHER FROM WEATHER ENDPOINT USING LAT AND LON
-const getOpenWeatherTemp = async ({lat, lon}) => {
+const getOpenWeatherTemp = async ({ lat, lon }) => {
     try {
       const result = await axios.get('http://localhost:5000/weather', { 
-        params: {lat, lon}
+        params: { lat, lon, units: 'imperial' }
       });
-      return result.data.current.temp;
+      console.log('Weather data:', result.data);
+      return result.data.main.temp;
     } catch(error) {
         console.log('Cannot get current temperature', error);
         return null;
@@ -96,10 +98,12 @@ const registerEventHandlers = () => {
     const city = document.getElementById('cityNameInput').value;
     const coordinates = await getLonLat(city);
     const temp = await getOpenWeatherTemp(coordinates);
+    console.log('Fetched temp:', temp);
     if (temp !== null) {
-      state.temperature = temp;
-      temperature.textContent = state.temperature;
-      updateTempStyles();
+    const roundedTemp = Math.round(temp);
+    state.temperature = roundedTemp;
+    temperature.textContent = state.temperature;
+    updateTempStyles();
     }
   })
 };
