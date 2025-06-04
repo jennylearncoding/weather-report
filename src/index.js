@@ -97,9 +97,9 @@ const registerEventHandlers = () => {
     const coordinates = await getLonLat(city);
     const temp = await getOpenWeatherTemp(coordinates);
     if (temp !== null) {
-          state.temperature = temp;
-    temperature.textContent = state.temperature;
-    updateTempStyles();
+      state.temperature = temp;
+      temperature.textContent = state.temperature;
+      updateTempStyles();
     }
   })
 };
