@@ -49,6 +49,15 @@ const updateCity = () => {
   cityName.textContent = cityInput.value; 
 };
 
+// RESET CITY TO DEFAULT PARIS
+const defaultCity = 'Paris';
+const cityInput = document.getElementById('cityNameInput');
+const cityReset = document.getElementById('cityNameReset');
+const resetCity = () => {
+  cityInput.value = defaultCity;
+  updateCity();
+}
+
 // GET LON AND LAT FROM LOCATION ENDPOINT
 const getLonLat = async (city) => {
   console.log('stepping into getLonLat function')
@@ -96,6 +105,7 @@ const changeSkies = () => {
   sky.textContent = skies[selectedSky];
 };
 
+// REGISTER EVENTS
 const registerEventHandlers = () => {
   // increase temperature
   const upButton = document.getElementById('increaseTempControl');
@@ -122,6 +132,9 @@ const registerEventHandlers = () => {
   })
   // sky change
   skySelect.addEventListener('change', changeSkies);
+  // reset city
+  const cityReset = document.getElementById('cityNameReset');
+  cityReset.addEventListener('click', resetCity);
 };
 
 document.addEventListener('DOMContentLoaded', registerEventHandlers);
