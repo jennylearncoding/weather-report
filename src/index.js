@@ -81,6 +81,20 @@ const getOpenWeatherTemp = async ({ lat, lon }) => {
     } 
 };
 
+// CHANGE THE SKY FUNCTION Sunny
+
+const skySelect = document.getElementById('skySelect');
+const sky = document.getElementById('sky');
+const skies = {
+  sunny: '☁️ ☁️ ☁️ ☀️ ☁️ ☁️',
+  cloudy: '☁️☁️ ☁️ ☁️☁️ ☁️ 🌤 ☁️ ☁️☁️',
+  rainy: '🌧🌈⛈🌧🌧💧⛈🌧🌦🌧💧🌧🌧',
+  snowy: '🌨❄️🌨🌨❄️❄️🌨❄️🌨❄️❄️🌨🌨'
+};
+const changeSkies = () => {
+  const selectedSky = skySelect.value;
+  sky.textContent = skies[selectedSky];
+};
 
 const registerEventHandlers = () => {
   // increase temperature
@@ -106,6 +120,8 @@ const registerEventHandlers = () => {
     updateTempStyles();
     }
   })
+  // sky change
+  skySelect.addEventListener('change', changeSkies);
 };
 
 document.addEventListener('DOMContentLoaded', registerEventHandlers);
