@@ -1,6 +1,5 @@
 "use strict";
 
-
 // STATE TRACKING OBJECT
 const state = {
   temperature: 60,
@@ -10,6 +9,8 @@ const state = {
 // GLOBALLY ACCESSED VARIABLES
 const temperature = document.getElementById('tempValue');
 const landscape = document.getElementById('landscape');
+const cityName = document.getElementById('headerCityName');
+const cityInput = document.getElementById('cityNameInput');
 
 // UPDATE TEMPERATURE FUNCTION + LANDSCAPE + COLOR
 const updateTemperature = (direction) => {
@@ -44,14 +45,11 @@ const updateTempStyles = () => {
 
 // UPDATE CITY NAME FUNCTION
 const updateCity = () => {
-  const cityName = document.getElementById('headerCityName');
-  const cityInput = document.getElementById('cityNameInput');
   cityName.textContent = cityInput.value; 
 };
 
 // RESET CITY TO DEFAULT PARIS
 const defaultCity = 'Paris';
-const cityInput = document.getElementById('cityNameInput');
 const cityReset = document.getElementById('cityNameReset');
 const resetCity = () => {
   cityInput.value = defaultCity;
@@ -80,7 +78,7 @@ const getLonLat = async (city) => {
 const getOpenWeatherTemp = async ({ lat, lon }) => {
     try {
       const result = await axios.get('http://localhost:5000/weather', { 
-        params: { lat, lon, units: 'imperial' }
+        params: { lat, lon }
       });
       console.log('Weather data:', result.data);
       return result.data.main.temp;
@@ -105,6 +103,7 @@ const changeSkies = () => {
   sky.textContent = skies[selectedSky];
 };
 
+
 // REGISTER EVENTS
 const registerEventHandlers = () => {
   // increase temperature
@@ -116,6 +115,9 @@ const registerEventHandlers = () => {
   // city input
   const cityInput = document.getElementById('cityNameInput');
   cityInput.addEventListener('input', updateCity);
+  // reset city
+  const cityReset = document.getElementById('cityNameReset');
+  cityReset.addEventListener('click', resetCity);
   // update the weather
   const getTempButton = document.getElementById('currentTempButton');
   getTempButton.addEventListener('click', async () => {
@@ -132,9 +134,6 @@ const registerEventHandlers = () => {
   })
   // sky change
   skySelect.addEventListener('change', changeSkies);
-  // reset city
-  const cityReset = document.getElementById('cityNameReset');
-  cityReset.addEventListener('click', resetCity);
 };
 
 document.addEventListener('DOMContentLoaded', registerEventHandlers);
