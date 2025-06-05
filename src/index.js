@@ -2,17 +2,69 @@
 
 // STATE TRACKING OBJECT
 const state = {
-  temperature: 60,
-  cityName: null
+  temperature: 60
 };
 
-// GLOBALLY ACCESSED VARIABLES
-const temperature = document.getElementById('tempValue');
-const landscape = document.getElementById('landscape');
-const cityName = document.getElementById('headerCityName');
-const cityInput = document.getElementById('cityNameInput');
 
-// UPDATE TEMPERATURE FUNCTION + LANDSCAPE + COLOR
+// DOM VARIABLES
+const temperature = document.getElementById('tempValue');
+const cityInput = document.getElementById('cityNameInput');
+const landscape = document.getElementById('landscape');
+const skySelect = document.getElementById('skySelect');
+const sky = document.getElementById('sky');
+const cityName = document.getElementById('headerCityName');
+const upButton = document.getElementById('increaseTempControl');
+const downButton = document.getElementById('decreaseTempControl');
+const getTempButton = document.getElementById('currentTempButton');
+const cityReset = document.getElementById('cityNameReset');
+
+
+// ART OBJECTS
+const skies = {
+sunny: '☁️ ☁️ ☁️ ☀️ ☁️ ☁️',
+cloudy: '☁️☁️ ☁️ ☁️☁️ ☁️ 🌤 ☁️ ☁️☁️',
+rainy: '🌧🌈⛈🌧🌧💧⛈🌧🌦🌧💧🌧🌧',
+snowy: '🌨❄️🌨🌨❄️❄️🌨❄️🌨❄️❄️🌨🌨'
+};
+
+const landscapes = {
+  red: '🌵__🐍_🦂_🌵🌵__🐍_🏜_🦂',
+  orange: '🌸🌿🌼__🌷🌻🌿_☘️🌱_🌻🌷',
+  yellow: '🌾🌾_🍃_🪨__🛤_🌾🌾🌾_🍃',
+  green: '🌲🌲⛄️🌲⛄️🍂🌲🍁🌲🌲⛄️🍂🌲',
+  teal: '🌲⛄️🌲⛄️🌲⛄️🌲⛄️🌲⛄️🌲⛄️🌲'
+};
+
+
+// UPDATE TEMPERATURE AND LANDSCAPE LOGIC BASED ON TEMPERATURE
+const updateTempStyles = () => {
+  if (state.temperature >= 80) {
+    temperature.style.color = 'red';
+    landscape.textContent = landscapes.red;
+  } else if (state.temperature >= 70) {
+    temperature.style.color = 'orange';
+    landscape.textContent = landscapes.orange;
+  } else if (state.temperature >= 60) {
+    temperature.style.color = 'yellow';
+    landscape.textContent = landscapes.yellow;
+  } else if (state.temperature >= 50) {
+    temperature.style.color = 'green';
+    landscape.textContent = landscapes.green;
+  } else {
+    temperature.style.color = 'teal';
+    landscape.textContent = landscapes.teal;
+  }
+};
+
+
+// CHANGE THE SKY
+const changeSkies = () => {
+  const selectedSky = skySelect.value;
+  sky.textContent = skies[selectedSky];
+};
+
+
+// UPDATE TEMPERATURE MANUALLY
 const updateTemperature = (direction) => {
   if (direction === 'increase') {
     state.temperature += 1;
@@ -23,42 +75,20 @@ const updateTemperature = (direction) => {
   updateTempStyles();
 };
 
-// UPDATE TEMPERATURE/LANDSCAPE FUNCTION
-const updateTempStyles = () => {
-  if (state.temperature >= 80) {
-    temperature.style.color = 'red';
-    landscape.textContent = '🌵__🐍_🦂_🌵🌵__🐍_🏜_🦂';
-  } else if (state.temperature >= 70) {
-    temperature.style.color = 'orange';
-    landscape.textContent = '🌸🌿🌼__🌷🌻🌿_☘️🌱_🌻🌷';
-  } else if (state.temperature >= 60) {
-    temperature.style.color = 'yellow';
-    landscape.textContent = '🌾🌾_🍃_🪨__🛤_🌾🌾🌾_🍃';
-  } else if (state.temperature >= 50) {
-    temperature.style.color = 'green';
-    landscape.textContent = '🌲🌲⛄️🌲⛄️🍂🌲🍁🌲🌲⛄️🍂🌲';
-  } else {
-    temperature.style.color = 'teal';
-    landscape.textContent = '🌲🌲⛄️🌲⛄️🍂🌲🍁🌲🌲⛄️🍂🌲';
-  }
-};
 
-// UPDATE CITY NAME FUNCTION
+// UPDATE CITY NAME /  RESET CITY TO DEFAULT LOGIC
 const updateCity = () => {
   cityName.textContent = cityInput.value; 
 };
 
-// RESET CITY TO DEFAULT PARIS
-const defaultCity = 'Paris';
-const cityReset = document.getElementById('cityNameReset');
 const resetCity = () => {
-  cityInput.value = defaultCity;
+  cityInput.value = 'Paris';
   updateCity();
-}
+};
 
-// GET LON AND LAT FROM LOCATION ENDPOINT
+
+// GETTING CURRENT TEMPERATURE LOGIC / CONVERT TEMPERATURE FROM KELVIN TO FAHRENHEIT (K - 273.15) * 9/5 + 32
 const getLonLat = async (city) => {
-  console.log('stepping into getLonLat function')
     try {
       const result = await axios.get('http://localhost:5000/location', {
         params: {
@@ -66,7 +96,6 @@ const getLonLat = async (city) => {
         }
       });
       const { lat, lon } = result.data[0];
-      console.log('{ lat, lon }')
       return { lat, lon };
     } catch(error) {
         console.log('Cannot get coordinates', error);
@@ -74,66 +103,51 @@ const getLonLat = async (city) => {
     } 
 };
 
-// GET CURRENT WEATHER FROM WEATHER ENDPOINT USING LAT AND LON
 const getOpenWeatherTemp = async ({ lat, lon }) => {
     try {
       const result = await axios.get('http://localhost:5000/weather', { 
         params: { lat, lon }
       });
-      console.log('Weather data:', result.data);
-      return result.data.main.temp;
+      return convertTemp(result.data.main.temp);
     } catch(error) {
         console.log('Cannot get current temperature', error);
         return null;
     } 
 };
 
-// CHANGE THE SKY FUNCTION Sunny
+const convertTemp = temp => {
+  const fahrenheitTemp = (temp - 273.15) * 9/5 + 32;
+  return Math.round(fahrenheitTemp);
+};
 
-const skySelect = document.getElementById('skySelect');
-const sky = document.getElementById('sky');
-const skies = {
-  sunny: '☁️ ☁️ ☁️ ☀️ ☁️ ☁️',
-  cloudy: '☁️☁️ ☁️ ☁️☁️ ☁️ 🌤 ☁️ ☁️☁️',
-  rainy: '🌧🌈⛈🌧🌧💧⛈🌧🌦🌧💧🌧🌧',
-  snowy: '🌨❄️🌨🌨❄️❄️🌨❄️🌨❄️❄️🌨🌨'
-};
-const changeSkies = () => {
-  const selectedSky = skySelect.value;
-  sky.textContent = skies[selectedSky];
-};
 
 
 // REGISTER EVENTS
 const registerEventHandlers = () => {
   // increase temperature
-  const upButton = document.getElementById('increaseTempControl');
   upButton.addEventListener('click', () => updateTemperature('increase'));
   // decrease temperature
-  const downButton = document.getElementById('decreaseTempControl');
   downButton.addEventListener('click', () =>  updateTemperature('decrease'));
   // city input
-  const cityInput = document.getElementById('cityNameInput');
   cityInput.addEventListener('input', updateCity);
   // reset city
   const cityReset = document.getElementById('cityNameReset');
   cityReset.addEventListener('click', resetCity);
   // update the weather
-  const getTempButton = document.getElementById('currentTempButton');
   getTempButton.addEventListener('click', async () => {
-    const city = document.getElementById('cityNameInput').value;
+    const city = cityInput.value;
     const coordinates = await getLonLat(city);
     const temp = await getOpenWeatherTemp(coordinates);
-    console.log('Fetched temp:', temp);
     if (temp !== null) {
-    const roundedTemp = Math.round(temp);
-    state.temperature = roundedTemp;
+    state.temperature = temp;
     temperature.textContent = state.temperature;
     updateTempStyles();
     }
   })
   // sky change
   skySelect.addEventListener('change', changeSkies);
-};
+  // reset city
+  cityReset.addEventListener('click', resetCity);
+ };
 
 document.addEventListener('DOMContentLoaded', registerEventHandlers);
